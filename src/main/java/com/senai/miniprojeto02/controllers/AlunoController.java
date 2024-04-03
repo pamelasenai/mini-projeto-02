@@ -47,6 +47,6 @@ public class AlunoController {
     public ResponseEntity<String> delete(@PathVariable Long id) throws JsonProcessingException {
         log.info("DELETE /alunos - solicitação recebida para excluir aluno com id: {}", id);
         service.excluir(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Aluno deletado com sucesso.");
+        return ResponseEntity.noContent().build();
     }
 }

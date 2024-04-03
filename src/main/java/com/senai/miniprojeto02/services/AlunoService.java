@@ -59,9 +59,11 @@ public class AlunoService {
         aluno.setId(null);
 
         AlunoEntity alunoSalvo = alunoRepository.save(aluno);
-        String alunoJson = objectMapper.writeValueAsString(alunoSalvo);
         log.info("Aluno criado com sucesso.");
+
+        String alunoJson = objectMapper.writeValueAsString(alunoSalvo);
         log.debug("Dados do aluno: {}", alunoJson);
+
         return alunoResponse(alunoSalvo);
     }
 
@@ -73,9 +75,11 @@ public class AlunoService {
         aluno.setId(id);
 
         AlunoEntity alunoAtualizado = alunoRepository.save(aluno);
-        String alunoJson = objectMapper.writeValueAsString(alunoAtualizado);
         log.info("Aluno atualizado com sucesso.");
+
+        String alunoJson = objectMapper.writeValueAsString(alunoAtualizado);
         log.debug("Dados do aluno atualizado: {}", alunoJson);
+
         return alunoResponse(alunoAtualizado);
     }
 
