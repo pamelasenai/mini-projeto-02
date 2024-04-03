@@ -13,17 +13,12 @@ public class DisciplinaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "data_matricula", nullable = false)
-    private LocalDate dataMatricula;
+    @Column(nullable = false)
+    private String nome;
 
-    @Column(name = "media_final", nullable = false, columnDefinition = "numeric(5,2)")
-    private Double mediaFinal;
 
     @ManyToOne
-    @JoinColumn(name = "aluno_id", nullable = false)
-    private AlunoEntity aluno;
+    @JoinColumn(name = "professor_id", nullable = false)
+    private ProfessorEntity professor;
 
-    @ManyToOne
-    @JoinColumn(name = "disciplina_id", nullable = false)
-    private DisciplinaEntity disciplina;
 }
