@@ -171,7 +171,7 @@ Buscar por Matrícula:
 ## 📋 Todo List
 - [x] [Ex1 - Setup do projeto de notas](#-ex1---setup-do-projeto-de-notas)
 - [x] [Ex 2 - CRUD Alunos](#-ex-2---crud-alunos)
-- [ ] [Ex 3 - CRUD Professores](#-ex-3---crud-professores)
+- [x] [Ex 3 - CRUD Professores](#-ex-3---crud-professores)
 - [ ] [Ex 4 - CRUD Disciplinas](#-ex-4---crud-disciplinas)
 - [ ] [Ex 5 - Matricular alunos](#-ex-5---matricular-alunos)
 - [ ] [Ex 6 - Lançamento de nota](#-ex-6---lançamento-de-nota)
