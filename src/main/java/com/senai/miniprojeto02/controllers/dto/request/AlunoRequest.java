@@ -4,6 +4,6 @@ import java.time.LocalDate;
 
 public record AlunoRequest(
         String nome,
-        LocalDate nascimento
+        String nascimento
 ) {
 }
