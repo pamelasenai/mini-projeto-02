@@ -3,7 +3,6 @@ package com.senai.miniprojeto02.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 
 @Data
 @Entity
@@ -14,16 +13,9 @@ public class DisciplinaEntity {
     private Long id;
 
     @Column(name = "data_matricula", nullable = false)
-    private LocalDate dataMatricula;
-
-    @Column(name = "media_final", nullable = false, columnDefinition = "numeric(5,2)")
-    private Double mediaFinal;
+    private String nome;
 
     @ManyToOne
-    @JoinColumn(name = "aluno_id", nullable = false)
-    private AlunoEntity aluno;
-
-    @ManyToOne
-    @JoinColumn(name = "disciplina_id", nullable = false)
-    private DisciplinaEntity disciplina;
+    @JoinColumn(name = "professor_id", nullable = false)
+    private ProfessorEntity professor;
 }
