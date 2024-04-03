@@ -3,8 +3,6 @@ package com.senai.miniprojeto02.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 @Entity
 @Table(name = "disciplinas")
@@ -19,5 +17,4 @@ public class DisciplinaEntity {
     @ManyToOne
     @JoinColumn(name = "professor_id", nullable = false)
     private ProfessorEntity professor;
-
 }
