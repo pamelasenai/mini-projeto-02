@@ -174,7 +174,7 @@ Buscar por Matrícula:
 - [x] [Ex 3 - CRUD Professores](#-ex-3---crud-professores)
 - [x] [Ex 4 - CRUD Disciplinas](#-ex-4---crud-disciplinas)
 - [x] [Ex 5 - Matricular alunos](#-ex-5---matricular-alunos)
-- [ ] [Ex 6 - Lançamento de nota](#-ex-6---lançamento-de-nota)
+- [x] [Ex 6 - Lançamento de nota](#-ex-6---lançamento-de-nota)
 - [ ] [Ex 7 - Média geral do aluno](#-ex-7---média-geral-do-aluno)
 
 ## 📂 Descrição dos exercícios
