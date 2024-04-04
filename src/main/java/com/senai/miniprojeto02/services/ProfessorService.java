@@ -92,13 +92,17 @@ public class ProfessorService {
     }
 
     private ProfessorEntity professorEntity(ProfessorRequest professorRequest) throws BadRequestException {
+        log.info("Adicionando dados ao professor.");
+
         ProfessorEntity professor = new ProfessorEntity();
         validarNome(professorRequest.nome());
         professor.setNome(professorRequest.nome());
+
         return professor;
     }
 
     private void validarNome(String nome) throws BadRequestException {
+        log.info("Validando nome.");
         if (
                 nome == null ||
                 nome.isBlank() ||
@@ -107,5 +111,6 @@ public class ProfessorService {
             log.error("Nome do professor é inválido: {}", nome);
             throw new BadRequestException("Nome não pode estar em branco e deve ter ao menos 3 caracteres.");
         }
+        log.info("Nome valido.");
     }
 }

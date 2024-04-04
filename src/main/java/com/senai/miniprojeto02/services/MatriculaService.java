@@ -11,7 +11,6 @@ import com.senai.miniprojeto02.exception.NotFoundException;
 import com.senai.miniprojeto02.repositories.AlunoRepository;
 import com.senai.miniprojeto02.repositories.MatriculaRepository;
 import com.senai.miniprojeto02.repositories.DisciplinaRepository;
-import com.senai.miniprojeto02.repositories.NotaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -28,7 +27,6 @@ public class MatriculaService {
     private final MatriculaRepository matriculaRepository;
     private final AlunoRepository alunoRepository;
     private final DisciplinaRepository disciplinaRepository;
-    private final NotaRepository notaRepository;
     private final ObjectMapper objectMapper;
 
     public List<MatriculaResponse> buscarTodos() throws JsonProcessingException {
@@ -132,7 +130,7 @@ public class MatriculaService {
         log.info("Excluindo matrícula com id: {}", id);
         buscarPorId(id);
 
-        if(!notaRepository.findByDisciplinaId(id).isEmpty()) {
+        if(!matriculaRepository.findByDisciplinaId(id).isEmpty()) {
             log.error("Matrícula com id {} não pode ser excluída pois tem notas vinculadas a ela.", id);
             throw new BadRequestException(
                     "Matrícula com id " + id +
@@ -154,7 +152,7 @@ public class MatriculaService {
         );
     }
 
-    private MatriculaEntity matriculaEntity(MatriculaRequest matriculaRequest) throws BadRequestException {
+    private MatriculaEntity matriculaEntity(MatriculaRequest matriculaRequest) {
         Long alunoId = matriculaRequest.alunoId();
         Long disciplinaId = matriculaRequest.disciplinaId();
 
@@ -171,6 +169,7 @@ public class MatriculaService {
                 }
         );
 
+        log.info("Adicionando dados a matrícula.");
         MatriculaEntity matricula = new MatriculaEntity();
         matricula.setAluno(aluno);
         matricula.setDisciplina(disciplina);
