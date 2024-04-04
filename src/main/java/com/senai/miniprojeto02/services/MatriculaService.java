@@ -6,10 +6,10 @@ import com.senai.miniprojeto02.controllers.dto.request.MatriculaRequest;
 import com.senai.miniprojeto02.controllers.dto.response.MatriculaResponse;
 import com.senai.miniprojeto02.entities.AlunoEntity;
 import com.senai.miniprojeto02.entities.DisciplinaEntity;
-import com.senai.miniprojeto02.entities.DisciplinaMatriculaEntity;
+import com.senai.miniprojeto02.entities.MatriculaEntity;
 import com.senai.miniprojeto02.exception.NotFoundException;
 import com.senai.miniprojeto02.repositories.AlunoRepository;
-import com.senai.miniprojeto02.repositories.DisciplinaMatriculaRepository;
+import com.senai.miniprojeto02.repositories.MatriculaRepository;
 import com.senai.miniprojeto02.repositories.DisciplinaRepository;
 import com.senai.miniprojeto02.repositories.NotaRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DisciplinaMatriculaService {
-    private final DisciplinaMatriculaRepository matriculaRepository;
+public class MatriculaService {
+    private final MatriculaRepository matriculaRepository;
     private final AlunoRepository alunoRepository;
     private final DisciplinaRepository disciplinaRepository;
     private final NotaRepository notaRepository;
@@ -33,7 +33,7 @@ public class DisciplinaMatriculaService {
 
     public List<MatriculaResponse> buscarTodos() throws JsonProcessingException {
         log.info("Buscando todas as matrículas.");
-        List<DisciplinaMatriculaEntity> matriculas = matriculaRepository.findAll();
+        List<MatriculaEntity> matriculas = matriculaRepository.findAll();
         log.info("Matrículas encontradas.");
         List<MatriculaResponse> matriculasResponses = new ArrayList<>();
         matriculas.forEach( matricula -> matriculasResponses.add(matriculaResponse(matricula)));
@@ -48,7 +48,7 @@ public class DisciplinaMatriculaService {
 
     public MatriculaResponse buscarPorId(Long id) throws JsonProcessingException {
         log.info("Buscando matrícula no banco de dados com id: {}", id);
-        DisciplinaMatriculaEntity matricula = matriculaRepository.findById(id).orElseThrow(
+        MatriculaEntity matricula = matriculaRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Nenhum matrícula encontrada com o id: {}", id);
                     return new NotFoundException("Matrícula com id " + id + " não encontrada.");
@@ -62,7 +62,7 @@ public class DisciplinaMatriculaService {
 
     public List<MatriculaResponse> buscarPorAlunoId(Long alunoId) throws JsonProcessingException {
         log.info("Buscando matrículas no banco de dados para aluno com id: {}", alunoId);
-        List<DisciplinaMatriculaEntity> matriculas = matriculaRepository.findByAlunoId(alunoId);
+        List<MatriculaEntity> matriculas = matriculaRepository.findByAlunoId(alunoId);
         log.info("Matrículas encontradas.");
         List<MatriculaResponse> matriculasResponses = new ArrayList<>();
         matriculas.forEach( matricula -> matriculasResponses.add(matriculaResponse(matricula)));
@@ -78,7 +78,7 @@ public class DisciplinaMatriculaService {
 
     public List<MatriculaResponse> buscarPorDisciplinaId(Long disciplinaId) throws JsonProcessingException {
         log.info("Buscando matrículas no banco de dados para disciplina com id: {}", disciplinaId);
-        List<DisciplinaMatriculaEntity> matriculas = matriculaRepository.findByDisciplinaId(disciplinaId);
+        List<MatriculaEntity> matriculas = matriculaRepository.findByDisciplinaId(disciplinaId);
         log.info("Matrículas encontradas.");
         List<MatriculaResponse> matriculasResponses = new ArrayList<>();
         matriculas.forEach( matricula -> matriculasResponses.add(matriculaResponse(matricula)));
@@ -95,13 +95,13 @@ public class DisciplinaMatriculaService {
     public MatriculaResponse criar(MatriculaRequest matriculaRequest) throws Exception {
         log.info("Criando nova matrícula.");
 
-        DisciplinaMatriculaEntity matricula = matriculaEntity(matriculaRequest);
+        MatriculaEntity matricula = matriculaEntity(matriculaRequest);
         matricula.setId(null);
         LocalDate dataMatricula = LocalDate.now();
         matricula.setDataMatricula(dataMatricula);
         matricula.setMediaFinal(0.0);
 
-        DisciplinaMatriculaEntity matriculaSalvo = matriculaRepository.save(matricula);
+        MatriculaEntity matriculaSalvo = matriculaRepository.save(matricula);
         log.info("Matrícula criada com sucesso.");
 
         String matriculaJson = objectMapper.writeValueAsString(matriculaSalvo);
@@ -114,12 +114,12 @@ public class DisciplinaMatriculaService {
         log.info("Atualizando matrícula com id: {}", id);
         MatriculaResponse matriculaEntity = buscarPorId(id);
 
-        DisciplinaMatriculaEntity matricula = matriculaEntity(matriculaRequest);
+        MatriculaEntity matricula = matriculaEntity(matriculaRequest);
         matricula.setId(id);
         matricula.setDataMatricula(matriculaEntity.dataMatricula());
         matricula.setMediaFinal(matriculaEntity.mediaFinal());
 
-        DisciplinaMatriculaEntity matriculaAtualizada = matriculaRepository.save(matricula);
+        MatriculaEntity matriculaAtualizada = matriculaRepository.save(matricula);
         log.info("Matrícula atualizada com sucesso.");
 
         String matriculaJson = objectMapper.writeValueAsString(matriculaAtualizada);
@@ -144,7 +144,7 @@ public class DisciplinaMatriculaService {
         log.info("Matrícula com id {} excluída com sucesso.", id);
     }
 
-    private MatriculaResponse matriculaResponse(DisciplinaMatriculaEntity matricula){
+    private MatriculaResponse matriculaResponse(MatriculaEntity matricula){
         return new MatriculaResponse(
                 matricula.getId(),
                 matricula.getDataMatricula(),
@@ -154,7 +154,7 @@ public class DisciplinaMatriculaService {
         );
     }
 
-    private DisciplinaMatriculaEntity matriculaEntity(MatriculaRequest matriculaRequest) throws BadRequestException {
+    private MatriculaEntity matriculaEntity(MatriculaRequest matriculaRequest) throws BadRequestException {
         Long alunoId = matriculaRequest.alunoId();
         Long disciplinaId = matriculaRequest.disciplinaId();
 
@@ -171,7 +171,7 @@ public class DisciplinaMatriculaService {
                 }
         );
 
-        DisciplinaMatriculaEntity matricula = new DisciplinaMatriculaEntity();
+        MatriculaEntity matricula = new MatriculaEntity();
         matricula.setAluno(aluno);
         matricula.setDisciplina(disciplina);
 
