@@ -12,7 +12,7 @@ public class DisciplinaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "data_matricula", nullable = false)
+    @Column(name = "data_matricula", nullable = false, length = 150)
     private String nome;
 
     @ManyToOne
