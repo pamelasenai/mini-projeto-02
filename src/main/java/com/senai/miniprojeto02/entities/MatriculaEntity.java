@@ -16,7 +16,7 @@ public class MatriculaEntity {
     @Column(name = "data_matricula", nullable = false)
     private LocalDate dataMatricula;
 
-    @Column(name = "nota_final", nullable = false, columnDefinition = "numeric(5,2)")
+    @Column(name = "media_final", nullable = false, columnDefinition = "numeric(5,2)")
     private Double mediaFinal;
 
     @ManyToOne
