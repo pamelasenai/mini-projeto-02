@@ -29,9 +29,7 @@ public class AlunoService {
         log.info("Buscando todos os alunos do banco de dados.");
         List<AlunoEntity> alunos = alunoRepository.findAll();
         List<AlunoResponse> alunosResponse = new ArrayList<>();
-        alunos.forEach(aluno -> alunosResponse.add(
-                alunoResponse(aluno)
-        ));
+        alunos.forEach(aluno -> alunosResponse.add(alunoResponse(aluno)));
         log.info("Total de alunos encontrados: {}", alunos.size());
         String alunosJson = objectMapper.writeValueAsString(alunos);
         log.debug("Alunos encontrados: {}", alunosJson);
