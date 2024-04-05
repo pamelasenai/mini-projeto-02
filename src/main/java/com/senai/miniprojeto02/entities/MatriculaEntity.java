@@ -7,8 +7,8 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "disciplina_matricula")
-public class DisciplinaMatriculaEntity {
+@Table(name = "matricula")
+public class MatriculaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,7 +16,7 @@ public class DisciplinaMatriculaEntity {
     @Column(name = "data_matricula", nullable = false)
     private LocalDate dataMatricula;
 
-    @Column(name = "nota_final", nullable = false, columnDefinition = "numeric(5,2)")
+    @Column(name = "media_final", nullable = false, columnDefinition = "numeric(5,2)")
     private Double mediaFinal;
 
     @ManyToOne

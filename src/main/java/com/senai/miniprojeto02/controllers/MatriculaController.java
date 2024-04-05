@@ -3,7 +3,8 @@ package com.senai.miniprojeto02.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.senai.miniprojeto02.controllers.dto.request.MatriculaRequest;
 import com.senai.miniprojeto02.controllers.dto.response.MatriculaResponse;
-import com.senai.miniprojeto02.services.DisciplinaMatriculaService;
+import com.senai.miniprojeto02.controllers.dto.response.MediaGeralResponse;
+import com.senai.miniprojeto02.services.MatriculaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/matriculas")
-public class DisciplinaMatriculaController {
-    private final DisciplinaMatriculaService service;
+public class MatriculaController {
+    private final MatriculaService service;
 
     @GetMapping()
     public ResponseEntity<List<MatriculaResponse>> get() throws JsonProcessingException {
@@ -39,12 +40,23 @@ public class DisciplinaMatriculaController {
         return ResponseEntity.ok().body(service.buscarPorAlunoId(alunoId));
     }
 
+    @GetMapping("/aluno/{alunoId}/media-geral")
+    public ResponseEntity<List<MediaGeralResponse>> getMediaPorAlunoId(
+            @PathVariable Long alunoId
+    ) throws Exception {
+        log.info(
+                "GET /matriculas/aluno/media-geral - solicitação recebida para buscar media geral do aluno id: {}",
+                alunoId
+        );
+        return ResponseEntity.ok().body(service.buscarMediaGeralPorAlunoId(alunoId));
+    }
+
     @GetMapping("/disciplina/{disciplinaId}")
     public ResponseEntity<List<MatriculaResponse>> getPorDisciplinaId(
             @PathVariable Long disciplinaId
     ) throws JsonProcessingException {
         log.info(
-                "GET /matriculas/disciplina - solicitação recebida para buscar matriculas da disciplna id: {}",
+                "GET /matriculas/disciplina - solicitação recebida para buscar matriculas da disciplina id: {}",
                 disciplinaId
         );
         return ResponseEntity.ok().body(service.buscarPorDisciplinaId(disciplinaId));

@@ -93,15 +93,16 @@ public class AlunoService {
     }
 
     private AlunoEntity alunoEntity(AlunoRequest alunoRequest) throws BadRequestException {
+        log.info("Adicionando dados ao aluno.");
         AlunoEntity aluno = new AlunoEntity();
         validarNome(alunoRequest.nome());
         aluno.setNome(alunoRequest.nome());
-        aluno.setNascimento(formatarData(alunoRequest.nascimento()));
+        aluno.setNascimento(validarData(alunoRequest.nascimento()));
         return aluno;
     }
 
-    private LocalDate formatarData(String dataString) {
-        LocalDate nascimento;
+    private LocalDate validarData(String dataString) {
+        log.info("Validando data.");
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return LocalDate.parse(dataString, formatter);
@@ -112,6 +113,7 @@ public class AlunoService {
     }
 
     private void validarNome(String nome) throws BadRequestException {
+        log.info("Validando nome.");
         if (
                 nome == null ||
                 nome.isBlank() ||

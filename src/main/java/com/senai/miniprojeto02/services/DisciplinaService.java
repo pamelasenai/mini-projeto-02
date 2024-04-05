@@ -102,6 +102,8 @@ public class DisciplinaService {
                     return new NotFoundException("Disciplina com id " + professorId + " não encontrado.");
                 }
         );
+
+        log.info("Adicionando dados a disciplina.");
         DisciplinaEntity disciplina = new DisciplinaEntity();
         validarNome(disciplinaRequest.nome());
         disciplina.setNome(disciplinaRequest.nome());
@@ -110,6 +112,7 @@ public class DisciplinaService {
     }
 
     private void validarNome(String nome) throws BadRequestException {
+        log.info("Validando nome.");
         if (
                 nome == null ||
                 nome.isBlank() ||
@@ -118,5 +121,6 @@ public class DisciplinaService {
             log.error("Nome do disciplina é inválido: {}", nome);
             throw new BadRequestException("Nome não pode estar em branco e deve ter ao menos 2 caracteres.");
         }
+        log.info("Nome valido.");
     }
 }

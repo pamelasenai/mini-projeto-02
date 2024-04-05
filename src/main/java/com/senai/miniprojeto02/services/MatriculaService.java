@@ -4,19 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senai.miniprojeto02.controllers.dto.request.MatriculaRequest;
 import com.senai.miniprojeto02.controllers.dto.response.MatriculaResponse;
+import com.senai.miniprojeto02.controllers.dto.response.MediaGeralResponse;
 import com.senai.miniprojeto02.entities.AlunoEntity;
 import com.senai.miniprojeto02.entities.DisciplinaEntity;
-import com.senai.miniprojeto02.entities.DisciplinaMatriculaEntity;
+import com.senai.miniprojeto02.entities.MatriculaEntity;
 import com.senai.miniprojeto02.exception.NotFoundException;
 import com.senai.miniprojeto02.repositories.AlunoRepository;
-import com.senai.miniprojeto02.repositories.DisciplinaMatriculaRepository;
+import com.senai.miniprojeto02.repositories.MatriculaRepository;
 import com.senai.miniprojeto02.repositories.DisciplinaRepository;
-import com.senai.miniprojeto02.repositories.NotaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +25,15 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DisciplinaMatriculaService {
-    private final DisciplinaMatriculaRepository matriculaRepository;
+public class MatriculaService {
+    private final MatriculaRepository matriculaRepository;
     private final AlunoRepository alunoRepository;
     private final DisciplinaRepository disciplinaRepository;
-    private final NotaRepository notaRepository;
     private final ObjectMapper objectMapper;
 
     public List<MatriculaResponse> buscarTodos() throws JsonProcessingException {
         log.info("Buscando todas as matrículas.");
-        List<DisciplinaMatriculaEntity> matriculas = matriculaRepository.findAll();
+        List<MatriculaEntity> matriculas = matriculaRepository.findAll();
         log.info("Matrículas encontradas.");
         List<MatriculaResponse> matriculasResponses = new ArrayList<>();
         matriculas.forEach( matricula -> matriculasResponses.add(matriculaResponse(matricula)));
@@ -48,7 +48,7 @@ public class DisciplinaMatriculaService {
 
     public MatriculaResponse buscarPorId(Long id) throws JsonProcessingException {
         log.info("Buscando matrícula no banco de dados com id: {}", id);
-        DisciplinaMatriculaEntity matricula = matriculaRepository.findById(id).orElseThrow(
+        MatriculaEntity matricula = matriculaRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Nenhum matrícula encontrada com o id: {}", id);
                     return new NotFoundException("Matrícula com id " + id + " não encontrada.");
@@ -62,7 +62,7 @@ public class DisciplinaMatriculaService {
 
     public List<MatriculaResponse> buscarPorAlunoId(Long alunoId) throws JsonProcessingException {
         log.info("Buscando matrículas no banco de dados para aluno com id: {}", alunoId);
-        List<DisciplinaMatriculaEntity> matriculas = matriculaRepository.findByAlunoId(alunoId);
+        List<MatriculaEntity> matriculas = matriculaRepository.findByAlunoId(alunoId);
         log.info("Matrículas encontradas.");
         List<MatriculaResponse> matriculasResponses = new ArrayList<>();
         matriculas.forEach( matricula -> matriculasResponses.add(matriculaResponse(matricula)));
@@ -76,9 +76,36 @@ public class DisciplinaMatriculaService {
         return matriculasResponses;
     }
 
+    public List<MediaGeralResponse> buscarMediaGeralPorAlunoId(Long alunoId) throws Exception {
+        log.info("Buscando media geral para aluno com id: {}", alunoId);
+        List<Object[]> matriculas = matriculaRepository.findMediaGeralAlunoId(alunoId);
+        log.debug("Médias encontradas com sucesso.");
+
+        log.info("Calculando media geral por disciplina");
+        List<MediaGeralResponse> mediaGeral = new ArrayList<>();
+        for (Object[] matricula : matriculas) {
+            Long disciplinaId = (Long) matricula[0];
+            DisciplinaEntity disciplina = disciplinaRepository.findById(disciplinaId).orElseThrow();
+            BigDecimal mediaBigDecimal = (BigDecimal) matricula[1];
+            double media = mediaBigDecimal.doubleValue();
+            MediaGeralResponse mediaGeralResponse = new MediaGeralResponse(media, disciplina);
+            mediaGeral.add(mediaGeralResponse);
+        }
+
+        if(matriculas.isEmpty()) {
+            log.error("Nenhuma matrícula encontrada para o aluno com o id: {}", alunoId);
+            throw new NotFoundException("Nenhuma matrícula encontrada para o aluno com o id: " + alunoId + ".");
+        }
+
+        String mediaGeralJson = objectMapper.writeValueAsString(mediaGeral);
+        log.debug("Médias encontradas: {}", mediaGeralJson);
+
+        return mediaGeral;
+    }
+
     public List<MatriculaResponse> buscarPorDisciplinaId(Long disciplinaId) throws JsonProcessingException {
         log.info("Buscando matrículas no banco de dados para disciplina com id: {}", disciplinaId);
-        List<DisciplinaMatriculaEntity> matriculas = matriculaRepository.findByDisciplinaId(disciplinaId);
+        List<MatriculaEntity> matriculas = matriculaRepository.findByDisciplinaId(disciplinaId);
         log.info("Matrículas encontradas.");
         List<MatriculaResponse> matriculasResponses = new ArrayList<>();
         matriculas.forEach( matricula -> matriculasResponses.add(matriculaResponse(matricula)));
@@ -95,13 +122,13 @@ public class DisciplinaMatriculaService {
     public MatriculaResponse criar(MatriculaRequest matriculaRequest) throws Exception {
         log.info("Criando nova matrícula.");
 
-        DisciplinaMatriculaEntity matricula = matriculaEntity(matriculaRequest);
+        MatriculaEntity matricula = matriculaEntity(matriculaRequest);
         matricula.setId(null);
         LocalDate dataMatricula = LocalDate.now();
         matricula.setDataMatricula(dataMatricula);
         matricula.setMediaFinal(0.0);
 
-        DisciplinaMatriculaEntity matriculaSalvo = matriculaRepository.save(matricula);
+        MatriculaEntity matriculaSalvo = matriculaRepository.save(matricula);
         log.info("Matrícula criada com sucesso.");
 
         String matriculaJson = objectMapper.writeValueAsString(matriculaSalvo);
@@ -114,12 +141,12 @@ public class DisciplinaMatriculaService {
         log.info("Atualizando matrícula com id: {}", id);
         MatriculaResponse matriculaEntity = buscarPorId(id);
 
-        DisciplinaMatriculaEntity matricula = matriculaEntity(matriculaRequest);
+        MatriculaEntity matricula = matriculaEntity(matriculaRequest);
         matricula.setId(id);
         matricula.setDataMatricula(matriculaEntity.dataMatricula());
         matricula.setMediaFinal(matriculaEntity.mediaFinal());
 
-        DisciplinaMatriculaEntity matriculaAtualizada = matriculaRepository.save(matricula);
+        MatriculaEntity matriculaAtualizada = matriculaRepository.save(matricula);
         log.info("Matrícula atualizada com sucesso.");
 
         String matriculaJson = objectMapper.writeValueAsString(matriculaAtualizada);
@@ -132,7 +159,7 @@ public class DisciplinaMatriculaService {
         log.info("Excluindo matrícula com id: {}", id);
         buscarPorId(id);
 
-        if(!notaRepository.findByDisciplinaId(id).isEmpty()) {
+        if(!matriculaRepository.findByDisciplinaId(id).isEmpty()) {
             log.error("Matrícula com id {} não pode ser excluída pois tem notas vinculadas a ela.", id);
             throw new BadRequestException(
                     "Matrícula com id " + id +
@@ -144,7 +171,7 @@ public class DisciplinaMatriculaService {
         log.info("Matrícula com id {} excluída com sucesso.", id);
     }
 
-    private MatriculaResponse matriculaResponse(DisciplinaMatriculaEntity matricula){
+    private MatriculaResponse matriculaResponse(MatriculaEntity matricula){
         return new MatriculaResponse(
                 matricula.getId(),
                 matricula.getDataMatricula(),
@@ -154,7 +181,7 @@ public class DisciplinaMatriculaService {
         );
     }
 
-    private DisciplinaMatriculaEntity matriculaEntity(MatriculaRequest matriculaRequest) throws BadRequestException {
+    private MatriculaEntity matriculaEntity(MatriculaRequest matriculaRequest) {
         Long alunoId = matriculaRequest.alunoId();
         Long disciplinaId = matriculaRequest.disciplinaId();
 
@@ -171,7 +198,8 @@ public class DisciplinaMatriculaService {
                 }
         );
 
-        DisciplinaMatriculaEntity matricula = new DisciplinaMatriculaEntity();
+        log.info("Adicionando dados a matrícula.");
+        MatriculaEntity matricula = new MatriculaEntity();
         matricula.setAluno(aluno);
         matricula.setDisciplina(disciplina);
 
