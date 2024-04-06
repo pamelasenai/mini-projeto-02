@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senai.miniprojeto02.controllers.dto.request.MatriculaRequest;
 import com.senai.miniprojeto02.controllers.dto.response.MatriculaResponse;
+import com.senai.miniprojeto02.controllers.dto.response.MediaGeralResponse;
 import com.senai.miniprojeto02.entities.AlunoEntity;
 import com.senai.miniprojeto02.entities.DisciplinaEntity;
 import com.senai.miniprojeto02.entities.MatriculaEntity;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +74,33 @@ public class MatriculaService {
         String matriculasJson = objectMapper.writeValueAsString(matriculas);
         log.debug("Matrículas encontrados: {}", matriculasJson);
         return matriculasResponses;
+    }
+
+    public List<MediaGeralResponse> buscarMediaGeralPorAlunoId(Long alunoId) throws Exception {
+        log.info("Buscando media geral para aluno com id: {}", alunoId);
+        List<Object[]> matriculas = matriculaRepository.findMediaGeralAlunoId(alunoId);
+        log.debug("Médias encontradas com sucesso.");
+
+        log.info("Calculando media geral por disciplina");
+        List<MediaGeralResponse> mediaGeral = new ArrayList<>();
+        for (Object[] matricula : matriculas) {
+            Long disciplinaId = (Long) matricula[0];
+            DisciplinaEntity disciplina = disciplinaRepository.findById(disciplinaId).orElseThrow();
+            BigDecimal mediaBigDecimal = (BigDecimal) matricula[1];
+            double media = mediaBigDecimal.doubleValue();
+            MediaGeralResponse mediaGeralResponse = new MediaGeralResponse(media, disciplina);
+            mediaGeral.add(mediaGeralResponse);
+        }
+
+        if(matriculas.isEmpty()) {
+            log.error("Nenhuma matrícula encontrada para o aluno com o id: {}", alunoId);
+            throw new NotFoundException("Nenhuma matrícula encontrada para o aluno com o id: " + alunoId + ".");
+        }
+
+        String mediaGeralJson = objectMapper.writeValueAsString(mediaGeral);
+        log.debug("Médias encontradas: {}", mediaGeralJson);
+
+        return mediaGeral;
     }
 
     public List<MatriculaResponse> buscarPorDisciplinaId(Long disciplinaId) throws JsonProcessingException {

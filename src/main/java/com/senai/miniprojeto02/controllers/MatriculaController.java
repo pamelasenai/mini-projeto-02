@@ -3,6 +3,7 @@ package com.senai.miniprojeto02.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.senai.miniprojeto02.controllers.dto.request.MatriculaRequest;
 import com.senai.miniprojeto02.controllers.dto.response.MatriculaResponse;
+import com.senai.miniprojeto02.controllers.dto.response.MediaGeralResponse;
 import com.senai.miniprojeto02.services.MatriculaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +40,23 @@ public class MatriculaController {
         return ResponseEntity.ok().body(service.buscarPorAlunoId(alunoId));
     }
 
+    @GetMapping("/aluno/{alunoId}/media-geral")
+    public ResponseEntity<List<MediaGeralResponse>> getMediaPorAlunoId(
+            @PathVariable Long alunoId
+    ) throws Exception {
+        log.info(
+                "GET /matriculas/aluno/media-geral - solicitação recebida para buscar media geral do aluno id: {}",
+                alunoId
+        );
+        return ResponseEntity.ok().body(service.buscarMediaGeralPorAlunoId(alunoId));
+    }
+
     @GetMapping("/disciplina/{disciplinaId}")
     public ResponseEntity<List<MatriculaResponse>> getPorDisciplinaId(
             @PathVariable Long disciplinaId
     ) throws JsonProcessingException {
         log.info(
-                "GET /matriculas/disciplina - solicitação recebida para buscar matriculas da disciplna id: {}",
+                "GET /matriculas/disciplina - solicitação recebida para buscar matriculas da disciplina id: {}",
                 disciplinaId
         );
         return ResponseEntity.ok().body(service.buscarPorDisciplinaId(disciplinaId));
